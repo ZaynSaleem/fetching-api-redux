@@ -1,9 +1,16 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { addTodo, dltTodo, updateTodo } from "../../store/actions";
+import {
+  addTodo,
+  deleteSelected,
+  dltTodo,
+  updateTodo,
+} from "../../store/actions";
 import { useSelector } from "react-redux";
 
 const Index = () => {
+  // let arr = [];
+
   const Data = useSelector((state) => state?.todo.data);
   // console.log(Data);
   // console.log(Data.lengt);
@@ -12,6 +19,7 @@ const Index = () => {
   const [num, setNum] = useState("");
   const [uptId, setUptId] = useState("");
   const [bool, setBool] = useState(false);
+  const [arr, setArr] = useState([]);
 
   const dispatch = useDispatch();
   const add = () => {
@@ -19,7 +27,7 @@ const Index = () => {
       alert("You must Write something");
       return false;
     } else {
-      let id = Math.ceil(Math.random() * 100);
+      let id = Math.ceil(Math.random() * 1000);
       dispatch(addTodo(id, name, email, num));
       setName("");
       setEmail("");
@@ -28,20 +36,22 @@ const Index = () => {
   };
   const del = (id) => {
     dispatch(dltTodo(id));
-    // console.log(id);
   };
 
   const edit = (id) => {
+    console.log(id);
     setBool(true);
     let data = Data.filter((x) => x.id === id);
-    data.map((item) => {
-      setUptId(item.id);
-      setName(item.name);
-      setEmail(item.email);
-      setNum(item.num);
-    });
-    // console.log(data.email);
-    console.log(id);
+    if (data && data.length) {
+      data.map((item) => {
+        setUptId(item.id);
+        setName(item.name);
+        setEmail(item.email);
+        setNum(item.num);
+      });
+    } else {
+      alert("No Data !");
+    }
   };
 
   const update = () => {
@@ -49,7 +59,8 @@ const Index = () => {
       alert("You must Write something");
       return false;
     } else {
-      dispatch(updateTodo(uptId, name, email, num));
+      console.log(arr);
+      dispatch(updateTodo(uptId, name, email, num, arr));
       setName("");
       setEmail("");
       setNum("");
@@ -57,6 +68,22 @@ const Index = () => {
     }
   };
 
+  const handleChange = (event) => {
+    let valueCheck = event.target.value;
+    let chcked = event.target.checked;
+    let dup = [...arr];
+    if (chcked) {
+      dup.push(+valueCheck);
+      setArr(dup);
+    } else {
+      let updated = dup.filter((item) => !valueCheck.includes(item));
+      setArr(updated);
+    }
+  };
+
+  const dltSelected = () => {
+    dispatch(deleteSelected(arr));
+  };
   return (
     <div>
       <div className="row mt-4">
@@ -107,9 +134,17 @@ const Index = () => {
       <div className="row mt-4">
         <div className="col-md-12">
           {bool === false ? (
-            <div className="btn btn-primary" onClick={add}>
-              Add
-            </div>
+            <>
+              <button className="btn btn-primary" onClick={add}>
+                Add
+              </button>
+              <button
+                className="btn btn-danger float-end"
+                onClick={dltSelected}
+              >
+                Delete Selected
+              </button>
+            </>
           ) : (
             <div className="btn btn-primary" onClick={update}>
               Update
@@ -120,6 +155,9 @@ const Index = () => {
       <table className="table">
         <thead>
           <tr>
+            <th>
+              <input type="checkbox" className="form-check-input mt-2" />
+            </th>
             <th scope="col">Name</th>
             <th scope="col">Email</th>
             <th scope="col">Contact</th>
@@ -131,6 +169,15 @@ const Index = () => {
             Data.map((item, index) => {
               return (
                 <tr key={index}>
+                  <td>
+                    <input
+                      className="form-check-input mt-2"
+                      value={item.id}
+                      onChange={handleChange}
+                      type="checkbox"
+                 
+                    />
+                  </td>
                   <td>{item.name}</td>
                   <td>{item.email}</td>
                   <td>{item.num}</td>
