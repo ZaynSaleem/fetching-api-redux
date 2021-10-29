@@ -13,8 +13,8 @@ const reducer = (state = initialState111, action) => {
     case "DELETE":
       let dupData = [...state.data];
       let newArr = dupData.filter((x) => x.id !== action.payload);
-      console.log(newArr);
-      console.log(action.payload);
+      // console.log(newArr);
+      // console.log(action.payload);
       return {
         ...state,
         data: newArr,
@@ -23,9 +23,9 @@ const reducer = (state = initialState111, action) => {
       //   console.log(action.payload);
       let dup = [...state.data];
       let updateMultiArr = action.payload.arr1;
-      console.log(updateMultiArr);
+      // console.log(updateMultiArr);
       if (updateMultiArr && updateMultiArr.length) {
-        console.log(updateMultiArr);
+        // console.log(updateMultiArr);
         for (let i = 0; i < updateMultiArr.length; i++) {
           let u = dup.findIndex((x) => x.id === updateMultiArr[i]);
           // console.log(dup[u].email);
@@ -38,11 +38,11 @@ const reducer = (state = initialState111, action) => {
         dup[updated].name = action.payload.name;
         dup[updated].email = action.payload.email;
         dup[updated].num = action.payload.num;
-        console.log("sdsa");
+        // console.log("sdsa");
       }
       // let dup = [...state.data];
 
-      console.log(dup);
+      // console.log(dup);
       return {
         ...state,
         data: dup,
@@ -50,10 +50,10 @@ const reducer = (state = initialState111, action) => {
     case "DELETE_SELECTED":
       let duplicate = [...state.data];
       let arr = action.payload;
-      console.log(arr);
+      // console.log(arr);
 
       let updatedArr = duplicate.filter((x) => !arr.includes(x.id));
-      console.log(updatedArr);
+      // console.log(updatedArr);
 
       return {
         ...state,

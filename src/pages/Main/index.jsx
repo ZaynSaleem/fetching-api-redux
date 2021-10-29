@@ -20,6 +20,8 @@ const Index = () => {
   const [uptId, setUptId] = useState("");
   const [bool, setBool] = useState(false);
   const [arr, setArr] = useState([]);
+  const [isCheckAll, setisCheckAll] = useState(false);
+  const [isCheck, setisCheck] = useState([]);
 
   const dispatch = useDispatch();
   const add = () => {
@@ -28,7 +30,8 @@ const Index = () => {
       return false;
     } else {
       let id = Math.ceil(Math.random() * 1000);
-      dispatch(addTodo(id, name, email, num));
+      let key = false;
+      dispatch(addTodo(id, name, email, num, key));
       setName("");
       setEmail("");
       setNum("");
@@ -39,7 +42,7 @@ const Index = () => {
   };
 
   const edit = (id) => {
-    console.log(id);
+    // console.log(id);
     setBool(true);
     let data = Data.filter((x) => x.id === id);
     if (data && data.length) {
@@ -59,7 +62,7 @@ const Index = () => {
       alert("You must Write something");
       return false;
     } else {
-      console.log(arr);
+      // console.log(arr);
       dispatch(updateTodo(uptId, name, email, num, arr));
       setName("");
       setEmail("");
@@ -71,15 +74,38 @@ const Index = () => {
   const handleChange = (event) => {
     let valueCheck = event.target.value;
     let chcked = event.target.checked;
+    let dupData = [...Data];
     let dup = [...arr];
+
     if (chcked) {
       dup.push(+valueCheck);
       setArr(dup);
+      let u = dupData.findIndex((x) => x.id == valueCheck);
+      dupData[u].key = true;
     } else {
       let updated = dup.filter((item) => !valueCheck.includes(item));
       setArr(updated);
+      let u = dupData.findIndex((x) => x.id == valueCheck);
+      dupData[u].key = false;
     }
   };
+
+
+  const handleSelectAll = () => {
+    if (isCheckAll) {
+      setisCheckAll(false);
+      // console.log("unchecked");
+      Data.map((x) => (x.key = false));
+
+      setArr([]);
+    } else {
+      setArr(Data.map((item) => item.id));
+      Data.map((x) => (x.key = true));
+      setisCheckAll(true);
+    }
+  };
+
+
 
   const dltSelected = () => {
     dispatch(deleteSelected(arr));
@@ -156,7 +182,12 @@ const Index = () => {
         <thead>
           <tr>
             <th>
-              <input type="checkbox" className="form-check-input mt-2" />
+              <input
+                type="checkbox"
+                checked={isCheckAll}
+                onChange={handleSelectAll}
+                className="form-check-input mt-2"
+              />
             </th>
             <th scope="col">Name</th>
             <th scope="col">Email</th>
@@ -175,7 +206,7 @@ const Index = () => {
                       value={item.id}
                       onChange={handleChange}
                       type="checkbox"
-                 
+                      checked={item.key}
                     />
                   </td>
                   <td>{item.name}</td>

@@ -1,9 +1,9 @@
-export const addTodo = (id, name, email, num) => {
+export const addTodo = (id, name, email, num, key) => {
   // console.log(name,email,num);
   return (dispatch) => {
     dispatch({
       type: "add",
-      payload: { id, name, email, num },
+      payload: { id, name, email, num, key },
     });
   };
 };
