@@ -1,237 +1,116 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import {
-  addTodo,
-  deleteSelected,
-  dltTodo,
-  updateTodo,
-} from "../../store/actions";
+import { fetchCrimes, fetchForce, fetchAllCrime } from "../../store/actions";
 import { useSelector } from "react-redux";
 
 const Index = () => {
-  // let arr = [];
-
-  const Data = useSelector((state) => state?.todo.data);
-  // console.log(Data);
-  // console.log(Data.lengt);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [num, setNum] = useState("");
-  const [uptId, setUptId] = useState("");
-  const [bool, setBool] = useState(false);
-  const [arr, setArr] = useState([]);
-  const [isCheckAll, setisCheckAll] = useState(false);
-  const [isCheck, setisCheck] = useState([]);
+  const [crimeUrl, setCrimeUrl] = useState("");
+  const [forceUrl, setForceUrl] = useState("");
 
   const dispatch = useDispatch();
-  const add = () => {
-    if (name === "" || email === "" || num === "") {
-      alert("You must Write something");
-      return false;
-    } else {
-      let id = Math.ceil(Math.random() * 1000);
-      let key = false;
-      dispatch(addTodo(id, name, email, num, key));
-      setName("");
-      setEmail("");
-      setNum("");
-    }
+
+  useEffect(() => {
+    dispatch(fetchCrimes());
+    dispatch(fetchForce());
+  }, []);
+
+  const crimeCat = useSelector((state) => state?.todo.crimeCat);
+  const force = useSelector((state) => state?.todo.force);
+
+  const search = () => {
+    dispatch(fetchAllCrime(crimeUrl, forceUrl));
   };
-  const del = (id) => {
-    dispatch(dltTodo(id));
-  };
+  const crimeAll = useSelector((state) => state?.todo.crimeAll);
 
-  const edit = (id) => {
-    // console.log(id);
-    setBool(true);
-    let data = Data.filter((x) => x.id === id);
-    if (data && data.length) {
-      data.map((item) => {
-        setUptId(item.id);
-        setName(item.name);
-        setEmail(item.email);
-        setNum(item.num);
-      });
-    } else {
-      alert("No Data !");
-    }
-  };
-
-  const update = () => {
-    if (name === "" || email === "" || num === "") {
-      alert("You must Write something");
-      return false;
-    } else {
-      // console.log(arr);
-      dispatch(updateTodo(uptId, name, email, num, arr));
-      setName("");
-      setEmail("");
-      setNum("");
-      setBool(false);
-    }
-  };
-
-  const handleChange = (event) => {
-    let valueCheck = event.target.value;
-    let chcked = event.target.checked;
-    let dupData = [...Data];
-    let dup = [...arr];
-
-    if (chcked) {
-      dup.push(+valueCheck);
-      setArr(dup);
-      let u = dupData.findIndex((x) => x.id == valueCheck);
-      dupData[u].key = true;
-    } else {
-      let updated = dup.filter((item) => !valueCheck.includes(item));
-      setArr(updated);
-      let u = dupData.findIndex((x) => x.id == valueCheck);
-      dupData[u].key = false;
-    }
-  };
-
-
-  const handleSelectAll = () => {
-    if (isCheckAll) {
-      setisCheckAll(false);
-      // console.log("unchecked");
-      Data.map((x) => (x.key = false));
-
-      setArr([]);
-    } else {
-      setArr(Data.map((item) => item.id));
-      Data.map((x) => (x.key = true));
-      setisCheckAll(true);
-    }
-  };
-
-
-
-  const dltSelected = () => {
-    dispatch(deleteSelected(arr));
-  };
+  let count = 0;
   return (
     <div>
-      <div className="row mt-4">
+      <div className="row mt-4 justify-content-md-center">
         <div className="col-md-6">
-          <div className="input-group flex-nowrap">
-            <span className="input-group-text" id="addon-wrapping">
-              Username
-            </span>
-            <input
-              type="text"
-              className="form-control"
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-            />
-          </div>
+          <select
+            class="form-select form-select-lg mb-3"
+            aria-label=".form-select-lg example"
+            onChange={(event) => setCrimeUrl(event.target.value)}
+          >
+            <option selected>Select Crime Cat</option>
+            {crimeCat && crimeCat.length ? (
+              crimeCat.map((item, index) => {
+                return (
+                  <>
+                    <option value={item.url}>{item.name}</option>
+                  </>
+                );
+              })
+            ) : (
+              <>
+                <option value="1">LOADING</option>
+              </>
+            )}
+          </select>
         </div>
       </div>
-      <div className="row mt-4">
+      <div className="row mt-4 justify-content-md-center">
         <div className="col-md-6">
-          <div className="input-group flex-nowrap">
-            <span className="input-group-text" id="addon-wrapping">
-              Email
-            </span>
-            <input
-              type="Email"
-              className="form-control"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-            />
-          </div>
+          <select
+            class="form-select form-select-lg mb-3"
+            aria-label=".form-select-lg example"
+            onChange={(event) => setForceUrl(event.target.value)}
+          >
+            <option selected>Select Force</option>
+            {force && force.length ? (
+              force.map((item, index) => {
+                return (
+                  <>
+                    <option value={item.id}>{item.name}</option>
+                  </>
+                );
+              })
+            ) : (
+              <>
+                <option>LOADING</option>
+              </>
+            )}
+          </select>
         </div>
       </div>{" "}
-      <div className="row mt-4">
-        <div className="col-md-6">
-          <div className="input-group flex-nowrap">
-            <span className="input-group-text" id="addon-wrapping">
-              Number
-            </span>
-            <input
-              type="number"
-              className="form-control"
-              value={num}
-              onChange={(event) => setNum(event.target.value)}
-            />
-          </div>
+      <div className="row mt-4 justify-content-md-end">
+        <div className="col-md-4">
+          <button className="btn btn-success" onClick={search}>
+            SEARCH
+          </button>
         </div>
       </div>
-      <div className="row mt-4">
-        <div className="col-md-12">
-          {bool === false ? (
-            <>
-              <button className="btn btn-primary" onClick={add}>
-                Add
-              </button>
-              <button
-                className="btn btn-danger float-end"
-                onClick={dltSelected}
-              >
-                Delete Selected
-              </button>
-            </>
-          ) : (
-            <div className="btn btn-primary" onClick={update}>
-              Update
-            </div>
-          )}
-        </div>
-      </div>
-      <table className="table">
+      <table className="table mt-4">
         <thead>
           <tr>
-            <th>
-              <input
-                type="checkbox"
-                checked={isCheckAll}
-                onChange={handleSelectAll}
-                className="form-check-input mt-2"
-              />
-            </th>
-            <th scope="col">Name</th>
-            <th scope="col">Email</th>
-            <th scope="col">Contact</th>
-            <th scope="col">Action</th>
+            <th>S.NO</th>
+            <th scope="col">ID</th>
+            <th scope="col">CATEGORY</th>
+            <th scope="col">OUTCOME-STATUS-CATEGORY</th>
+            <th scope="col">DATE</th>
           </tr>
         </thead>
         <tbody>
-          {Data.length ? (
-            Data.map((item, index) => {
+          {!crimeAll.length ? (
+            <tr>
+              <td>NO DATA</td>
+            </tr>
+          ) : (
+            crimeAll.map((item, index) => {
               return (
-                <tr key={index}>
+                <tr>
+                  <td>{++count}</td>
+                  <td>{item.id}</td>
+                  <td>{item.category}</td>
                   <td>
-                    <input
-                      className="form-check-input mt-2"
-                      value={item.id}
-                      onChange={handleChange}
-                      type="checkbox"
-                      checked={item.key}
-                    />
+                    {!item.outcome_status ? "" : item.outcome_status.category}
                   </td>
-                  <td>{item.name}</td>
-                  <td>{item.email}</td>
-                  <td>{item.num}</td>
                   <td>
-                    <button
-                      className="btn btn-danger"
-                      onClick={() => del(item.id)}
-                    >
-                      delete
-                    </button>
-
-                    <button
-                      className="btn btn-primary ms-2"
-                      onClick={() => edit(item.id)}
-                    >
-                      EDIT
-                    </button>
+                    {!item.outcome_status ? "" : item.outcome_status.date}
                   </td>
                 </tr>
               );
             })
-          ) : (
-            <tr>No Data</tr>
           )}
         </tbody>
       </table>

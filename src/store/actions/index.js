@@ -1,36 +1,80 @@
-export const addTodo = (id, name, email, num, key) => {
-  // console.log(name,email,num);
+import axios from "axios";
+
+export const fetchCrimes = () => {
   return (dispatch) => {
-    dispatch({
-      type: "add",
-      payload: { id, name, email, num, key },
-    });
+    axios
+      .get("https://data.police.uk/api/crime-categories")
+      .then((response) => {
+        // console.log(response.data , "action");
+        dispatch({
+          type: "SUCCESS",
+          payload: response.data,
+        });
+      })
+      .catch((error) => {
+        const errorMsg = error.message;
+      });
   };
 };
 
-export const dltTodo = (id) => {
+export const fetchForce = () => {
   return (dispatch) => {
-    dispatch({
-      type: "DELETE",
-      payload: id,
-    });
+    axios
+      .get("https://data.police.uk/api/forces")
+      .then((response) => {
+        // console.log(response.data , "action");
+        dispatch({
+          type: "FORCE",
+          payload: response.data,
+        });
+      })
+      .catch((error) => {
+        const errorMsg = error.message;
+      });
   };
 };
 
-export const updateTodo = (id, name, email, num, arr1) => {
+export const fetchAllCrime = (crime,force) => {
   return (dispatch) => {
-    dispatch({
-      type: "UPDATE",
-      payload: { id, name, email, num, arr1 },
-    });
+    axios
+      .get(`https://data.police.uk/api/crimes-no-location?category=${crime}&force=${force}`)
+      .then((response) => {
+        // console.log(response.data , "action");
+        dispatch({
+          type: "FETCH_CRIME",
+          payload: response.data,
+        });
+      })
+      .catch((error) => {
+        const errorMsg = error.message;
+      });
   };
 };
 
-export const deleteSelected = (arr) => {
-  return (dispatch) => {
-    dispatch({
-      type: "DELETE_SELECTED",
-      payload: arr,
-    });
-  };
-};
+
+// export const crimeSuccess = (crimesCat) => {
+//   return (dispatch) => {
+//     dispatch({
+//       type: "DELETE",
+//       payload: id,
+//     });
+//   };
+// };
+
+// export const updateTodo = (id, name, email, num, arr1) => {
+//   return (dispatch) => {
+//     dispatch({
+//       type: "UPDATE",
+//       payload: { id, name, email, num, arr1 },
+//     });
+//   };
+// };
+
+// export const deleteSelected = (arr) => {
+//   return (dispatch) => {
+//     dispatch({
+//       type: "DELETE_SELECTED",
+//       payload: arr,
+//     });
+//   };
+// };
